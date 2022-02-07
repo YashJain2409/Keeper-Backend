@@ -9,7 +9,9 @@ const { body, validationResult } = require("express-validator");
 const saltRounds = 10;
 const app = express();
 app.use(bodyParser.json());
-mongoose.connect(`mongodb://localhost:27017/${process.env.DB_NAME}`);
+mongoose.connect(
+  `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.0cm8n.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`
+);
 
 // middleware.
 
@@ -163,6 +165,9 @@ app.delete("/notes/delete", fetchUser, function (req, res) {
     }
   );
 });
-app.listen(3001, () => {
+
+let port = process.env.PORT;
+if (port == null || port == "") port = 3001;
+app.listen(port, function () {
   console.log("listening on port 3001");
 });
