@@ -117,7 +117,7 @@ app.post("/login", function (req, res) {
   });
 });
 
-app.get("/notes/fetch", fetchUser, function (req, res) {
+app.get("/notes", fetchUser, function (req, res) {
   console.log("dfsdsf");
   const findEmail = req.user.email;
   User.find({ email: findEmail }, function (err, user) {
