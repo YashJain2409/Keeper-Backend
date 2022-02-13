@@ -118,7 +118,6 @@ app.post("/login", function (req, res) {
 });
 
 app.get("/notes", fetchUser, function (req, res) {
-  console.log("dfsdsf");
   const findEmail = req.user.email;
   User.find({ email: findEmail }, function (err, user) {
     if (!err) {
@@ -128,26 +127,37 @@ app.get("/notes", fetchUser, function (req, res) {
   });
 });
 
-app.post("/notes/add", fetchUser, (req, res) => {
-  User.updateOne(
-    { email: req.user.email },
-    {
-      $push: {
-        notes: {
-          _id: req.body.id,
-          title: req.body.title,
-          content: req.body.content,
+app.post(
+  "/notes/add",
+  body("title").not().isEmpty(),
+  body("content").not().isEmpty(),
+  fetchUser,
+  (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.status(400).json({ message: "invalid values" });
+      return;
+    }
+    User.updateOne(
+      { email: req.user.email },
+      {
+        $push: {
+          notes: {
+            _id: req.body.id,
+            title: req.body.title,
+            content: req.body.content,
+          },
         },
       },
-    },
-    function (err, result) {
-      if (!err) {
-        res.send({ message: "successfully added notes" });
-        console.log(result);
+      function (err, result) {
+        if (!err) {
+          res.send({ message: "successfully added notes" });
+          console.log(result);
+        }
       }
-    }
-  );
-});
+    );
+  }
+);
 
 app.delete("/notes/delete", fetchUser, function (req, res) {
   User.findByIdAndUpdate(
